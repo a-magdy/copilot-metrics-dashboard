@@ -98,7 +98,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 > **Note on `node_modules` patches**
 > The dashboard ships a small patch (under `src/dashboard/patches/`) that
-> `patch-package` applies automatically during `npm install`. It works
+> `patch-package` applies automatically during the `postinstall` script. It works
 > around an upstream bug in `buffer-equal-constant-time` (a transitive
 > dependency of `@azure/identity`) that makes the dashboard crash on
 > recent Node.js versions where `Buffer.SlowBuffer` has been removed. See

@@ -1,3 +1,29 @@
+/**
+ * Copilot metrics service
+ * -----------------------
+ *
+ * Sources Copilot usage data and shapes it into `CopilotUsageOutput[]` for
+ * the dashboard UI. Three back-ends, in priority order:
+ *
+ *   1. CosmosDB           — when `AZURE_COSMOSDB_ENDPOINT` is set,
+ *                           pre-ingested daily snapshots are queried.
+ *   2. GitHub API (live)  — otherwise we hit GitHub directly:
+ *                              a) /copilot/metrics/reports/users-28-day/latest
+ *                                 returns one or more pre-signed download
+ *                                 links to JSON or NDJSON files of per-user,
+ *                                 per-day usage records.
+ *                              b) /copilot/billing/seats provides the
+ *                                 seat <-> team mapping so we can attribute
+ *                                 each usage record to one or more teams.
+ *                           The two are joined and rolled up by day.
+ *   3. Sample data        — fallback used in `_getCopilotMetrics` for
+ *                           local development without GitHub credentials.
+ *
+ * The aggregation contract preserved for the UI is `CopilotUsageOutput[]`,
+ * one entry per (day, optional team) combination, with breakdowns by
+ * language and IDE. The chat-vs-completion split is derived from feature
+ * names (anything starting with `chat_` or containing `agent` is chat).
+ */
 import { formatResponseError, unknownResponseError } from "@/features/common/response-error";
 import {
   Breakdown,
